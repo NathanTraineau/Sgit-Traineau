@@ -187,7 +187,7 @@ def loop(new_file_lines :List[String], former_file_lines :List[String], list_cha
         }
         else if (new_file_lines.isEmpty) {
           val change2 = new Change("-", line, former_file_lines.head)
-          return loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line+1)
+          return loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
         }
         else if (new_file_lines.head == former_file_lines.head) {
           val no_change = new Change("", line, new_file_lines.head)
@@ -200,7 +200,7 @@ def loop(new_file_lines :List[String], former_file_lines :List[String], list_cha
           val add = loop(new_file_lines.tail, former_file_lines, list_changes.appended(change1), line + 1)
           //The line were created into the new file
           val change2 = Change("-", line, former_file_lines.head)
-          val supp = loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line+1)
+          val supp = loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
           if (add.size > supp.size) {
             supp
           } else {
