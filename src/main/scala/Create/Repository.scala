@@ -111,6 +111,7 @@ object Repository {
         repo.initialize_current_branch()
       case None =>
     }
+    Output.print_sgit("Initilalized empty Git repository in "+ sgit_path +"\n")
   }
 
   //////////////////// Files Managing //////////////////
