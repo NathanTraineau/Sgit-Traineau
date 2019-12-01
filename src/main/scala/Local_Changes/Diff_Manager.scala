@@ -177,17 +177,20 @@ object Diff_Manager {
       if(new_file_lines.isEmpty && former_file_lines.isEmpty){
         //We are at the end and we would like to take only the smallest liste of changes
         list_changes
-      }else {
-        if (new_file_lines.isEmpty) {
+      }
+        else if (new_file_lines.isEmpty) {
           val change2 = new Change("-", line, former_file_lines.head)
           return loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
         }
-        if (former_file_lines.isEmpty) {
+        else if (former_file_lines.isEmpty) {
           val change1 = new Change("+", line, new_file_lines.head)
           return loop(new_file_lines.tail, former_file_lines, list_changes.appended(change1), line + 1)
         }
+      else if(former_file_lines.head == "" && former_file_lines.size == 1){
+        loop(new_file_lines, former_file_lines.tail, list_changes, line)
+      }
 
-        if (new_file_lines.head == former_file_lines.head) {
+        else if (new_file_lines.head == former_file_lines.head) {
           val no_change = new Change("", line, new_file_lines.head)
           loop(new_file_lines.tail, former_file_lines.tail, list_changes.appended(no_change), line + 1)
         }
@@ -205,7 +208,6 @@ object Diff_Manager {
             add
           }
         }
-      }
     }
     loop(new_file_lines,former_file_lines)
   }
