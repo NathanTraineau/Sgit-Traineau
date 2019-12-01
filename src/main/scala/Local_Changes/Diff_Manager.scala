@@ -66,7 +66,9 @@ class Diff_Manager(repo : Repository) {
 
       }else{
         val blob_file = get_blob_file_from_index_line_function(blobs_lines.head,repo.get_object_file_from_sha1)
-        val rel : Relationship = Relationship(Some(blob_file),None,"created",blobs_lines.head)
+        val new_blob_file_content: List[String] = Blob_Manager.get_blob_file_content(blob_file)
+        val list_changes: List[Change] = Diff_Manager.get_modif_files(new_blob_file_content,List[String]())
+        val rel : Relationship = Relationship(Some(blob_file),None,"created",blobs_lines.head,list_changes)
         //The Created files
         check_files_status(blobs_lines.tail,index_lines,unmodified,modified,renamed,created.appended(rel),deleted)
       }
