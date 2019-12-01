@@ -68,7 +68,6 @@ class Diff_Manager(repo : Repository) {
         val blob_file = get_blob_file_from_index_line_function(blobs_lines.head,repo.get_object_file_from_sha1)
         val rel : Relationship = Relationship(Some(blob_file),None,"created",blobs_lines.head)
         //The Created files
-        print("file"+Blob_Manager.get_blob_file_content(blob_file)+ "\n")
         check_files_status(blobs_lines.tail,index_lines,unmodified,modified,renamed,created.appended(rel),deleted)
       }
     }else {
@@ -94,9 +93,9 @@ class Diff_Manager(repo : Repository) {
           }else{
             check_files_status(blobs_lines, index_lines.tail, unmodified, modified, renamed, created, deleted)
           }
-          }
       }
     }
+  }
 
   def check_index_changes(new_index_lines : List[String], index_line : String ): Relationship  = {
     //This function send back the status of the given blob considering the given index
@@ -139,85 +138,85 @@ class Diff_Manager(repo : Repository) {
 
   def get_set_relationship(blob_Manager: Blob_Manager = repo.get_blob_manager(),
                            index_Manager: Index_Manager = repo.get_index_manager()): Set_Relationship = {
-        //We get the files that the user wants to add
-        val working_tree_files = File_Tools.get_dirs_files_from_string(s"${repo.get_repo_path()}" :: Nil): List[File]
-        val blob_list = blob_Manager.blobs_create(working_tree_files)
-        val index = index_Manager.get_index_lines()
-        val blob_list_lines = blob_Manager.get_blob_list_index_line(blob_list)
-        val diff_class = new Diff_Manager(repo)
-        diff_class.check_files_status(blob_list_lines, index)
-    }
+    //We get the files that the user wants to add
+    val working_tree_files = File_Tools.get_dirs_files_from_string(s"${repo.get_repo_path()}" :: Nil): List[File]
+    val blob_list = blob_Manager.blobs_create(working_tree_files)
+    val index = index_Manager.get_index_lines()
+    val blob_list_lines = blob_Manager.get_blob_list_index_line(blob_list)
+    val diff_class = new Diff_Manager(repo)
+    diff_class.check_files_status(blob_list_lines, index)
+  }
   def get_set_relationship_static(newLines : List[String],
                                   formerLines:List[String]): Set_Relationship = {
     check_files_status(newLines, formerLines)
   }
-  }
-  object Diff_Manager {
+}
+object Diff_Manager {
 
-    def main(): Unit = {
-      Repository.get_repo_path() match {
-        case Some(value) => {
-          val repo: Repository = new Repository(value)
-          val diff_class = new Diff_Manager(repo)
-          val set_Relationship : Set_Relationship = diff_class.get_set_relationship()
-          val diff_string : String = diff_toString(set_Relationship)
-          Output.print_sgit(diff_string)
-          }
-          case _ => None
-        }
+  def main(): Unit = {
+    Repository.get_repo_path() match {
+      case Some(value) => {
+        val repo: Repository = new Repository(value)
+        val diff_class = new Diff_Manager(repo)
+        val set_Relationship : Set_Relationship = diff_class.get_set_relationship()
+        val diff_string : String = diff_toString(set_Relationship)
+        Output.print_sgit(diff_string)
       }
-
-
-
-
-    def get_modif_files(new_file_lines :List[String], former_file_lines :List[String]): List[Change] = {
-      //This function compare the 2 given files and gives the changes between these 2
-      // It should return the smallest amount of Modification Object possible between these 2 files
-
-      def loop(new_file_lines :List[String], former_file_lines :List[String], list_changes: List[Change] = List[Change](), line : Int = 0 ): List[Change] = {
-        if(new_file_lines.isEmpty && former_file_lines.isEmpty){
-          //We are at the end and we would like to take only the smallest liste of changes
-          list_changes
-        }else {
-          if (new_file_lines.isEmpty) {
-            val change2 = new Change("-", line, former_file_lines.head)
-            return loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
-          }
-          if (former_file_lines.isEmpty) {
-            val change1 = new Change("+", line, new_file_lines.head)
-            return loop(new_file_lines.tail, former_file_lines, list_changes.appended(change1), line + 1)
-          }
-
-          if (new_file_lines.head == former_file_lines.head) {
-            val no_change = new Change("", line, new_file_lines.head)
-            loop(new_file_lines.tail, former_file_lines.tail, list_changes.appended(no_change), line + 1)
-          }
-          else {
-            //We observe both scenarios :
-            //The line were removed from the former file
-            val change1 = Change("+", line, new_file_lines.head)
-            val add = loop(new_file_lines.tail, former_file_lines, list_changes.appended(change1), line + 1)
-            //The line were created into the new file
-            val change2 = Change("-", line, former_file_lines.head)
-            val supp = loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
-            if (add.size > supp.size) {
-              supp
-            } else {
-              add
-            }
-          }
-        }
-      }
-      loop(new_file_lines,former_file_lines)
+      case _ => None
     }
+  }
+
+
+
+
+  def get_modif_files(new_file_lines :List[String], former_file_lines :List[String]): List[Change] = {
+    //This function compare the 2 given files and gives the changes between these 2
+    // It should return the smallest amount of Modification Object possible between these 2 files
+
+    def loop(new_file_lines :List[String], former_file_lines :List[String], list_changes: List[Change] = List[Change](), line : Int = 0 ): List[Change] = {
+      if(new_file_lines.isEmpty && former_file_lines.isEmpty){
+        //We are at the end and we would like to take only the smallest liste of changes
+        list_changes
+      }else {
+        if (new_file_lines.isEmpty) {
+          val change2 = new Change("-", line, former_file_lines.head)
+          return loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
+        }
+        if (former_file_lines.isEmpty) {
+          val change1 = new Change("+", line, new_file_lines.head)
+          return loop(new_file_lines.tail, former_file_lines, list_changes.appended(change1), line + 1)
+        }
+
+        if (new_file_lines.head == former_file_lines.head) {
+          val no_change = new Change("", line, new_file_lines.head)
+          loop(new_file_lines.tail, former_file_lines.tail, list_changes.appended(no_change), line + 1)
+        }
+        else {
+          //We observe both scenarios :
+          //The line were removed from the former file
+          val change1 = Change("+", line, new_file_lines.head)
+          val add = loop(new_file_lines.tail, former_file_lines, list_changes.appended(change1), line + 1)
+          //The line were created into the new file
+          val change2 = Change("-", line, former_file_lines.head)
+          val supp = loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
+          if (add.size > supp.size) {
+            supp
+          } else {
+            add
+          }
+        }
+      }
+    }
+    loop(new_file_lines,former_file_lines)
+  }
 
 
 
   def diff_toString(set_Relationship: Set_Relationship, str : String ="",
                     get_blob_working_tree_file_path_function : (File,(File) => List[String]) => String = Blob_Manager.get_blob_working_tree_file_path,
                     read_in_file_function : (File) => List[String] = File_Tools.read_in_file): String={
-//if modified. pas empty :
-// et apreès on passe au suivant created...
+    //if modified. pas empty :
+    // et apreès on passe au suivant created...
     if(set_Relationship.modified.nonEmpty) {
       val relationship = set_Relationship.modified.head
       val name = relationship.new_blob_file match {
@@ -256,7 +255,7 @@ class Diff_Manager(repo : Repository) {
       diff_toString(new_set, str +  name_former_blob  + " has been renamed into => "  + name_new_blob +  "\n")
     }else {
       //We return the string
-       str
+      str
     }
   }
 

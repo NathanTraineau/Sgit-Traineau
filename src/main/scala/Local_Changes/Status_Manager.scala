@@ -28,7 +28,7 @@ object Status_Manager {
         val blob_list = blob_Manager.blobs_create(working_tree_files)
         val blob_list_lines = blob_Manager.get_blob_list_index_line(blob_list)
         val set_Relationship_stage_untracked : Set_Relationship = diff_class.get_set_relationship_static(blob_list_lines,index)
-        val stage_untracked_string : String = status_toString(set_Relationship_stage_untracked, untracked =true)
+        val stage_untracked_string : String = status_toString(set_Relationship_stage_untracked, untracked = true)
         Output.print_sgit("Here is the changes to be comitted \n"+ commit_stage_string + "\nHere are the untracked changes \n" + stage_untracked_string)
       }
       case _ => None
@@ -67,12 +67,12 @@ object Status_Manager {
       if(untracked) {
         val modified_introduction = s"${Console.RED} ${name}  ${Console.RESET} has been modified"
         val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified.tail, set_Relationship.renamed, set_Relationship.created, set_Relationship.deleted)
-        status_toString(new_set, str + modified_introduction + "\n")
+        status_toString(new_set, str + modified_introduction + "\n",untracked = untracked)
       }
       else{
         val modified_introduction = s"${Console.GREEN} ${name}  ${Console.RESET}  has been modified"
         val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified.tail, set_Relationship.renamed, set_Relationship.created, set_Relationship.deleted)
-        status_toString(new_set, str + modified_introduction + "\n")
+        status_toString(new_set, str + modified_introduction + "\n",untracked = untracked)
       }
     }else
     if(set_Relationship.created.nonEmpty) {
@@ -84,12 +84,12 @@ object Status_Manager {
       if(untracked) {
         val modified_introduction = s"${Console.RED} ${name}  ${Console.RESET} has been created"
         val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified, set_Relationship.renamed, set_Relationship.created.tail, set_Relationship.deleted)
-        status_toString(new_set, str + modified_introduction + "\n")
+        status_toString(new_set, str + modified_introduction + "\n",untracked = untracked)
       }
       else{
         val modified_introduction = s"${Console.GREEN} ${name}  ${Console.RESET}  has been created"
         val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified, set_Relationship.renamed, set_Relationship.created.tail, set_Relationship.deleted)
-        status_toString(new_set, str + modified_introduction + "\n")
+        status_toString(new_set, str + modified_introduction + "\n",untracked = untracked)
       }
     }else
     if(set_Relationship.deleted.nonEmpty) {
@@ -101,12 +101,12 @@ object Status_Manager {
       if(untracked) {
         val modified_introduction = s"${Console.RED} ${name}  ${Console.RESET} has been deleted"
         val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified, set_Relationship.renamed, set_Relationship.created, set_Relationship.deleted.tail)
-        status_toString(new_set, str + modified_introduction + "\n")
+        status_toString(new_set, str + modified_introduction + "\n",untracked = untracked)
       }
       else{
         val modified_introduction = s"${Console.GREEN} ${name}  ${Console.RESET}  has been deleted"
         val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified, set_Relationship.renamed, set_Relationship.created, set_Relationship.deleted.tail)
-        status_toString(new_set, str + modified_introduction + "\n")
+        status_toString(new_set, str + modified_introduction + "\n",untracked = untracked)
       }
     }else
     if(set_Relationship.renamed.nonEmpty) {

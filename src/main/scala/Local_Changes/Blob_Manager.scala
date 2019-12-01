@@ -72,7 +72,6 @@ class Blob_Manager(repo : Repository){
 
   def get_blob_file_from_index_line(index_line : String,
                                     get_object_file_from_sha1_function : (String,String) => File = repo.get_object_file_from_sha1): File = {
-
     try {
       val parse_1 = Repository.parse_index_line(index_line)
       val sha1_1 = parse_1(0)
@@ -84,8 +83,6 @@ class Blob_Manager(repo : Repository){
 }
 
 object Blob_Manager {
-
-
 
 def get_blob_working_tree_file_path(file : File,
                                     read_in_file_function : (File) => List[String] = File_Tools.read_in_file): String ={
