@@ -28,6 +28,8 @@ case class Relationship(new_blob_file : Option[File], former_Blob_File : Option[
   }
 }
 
+
+
 case class Set_Relationship( unmodified : List[Relationship] = List[Relationship](),
                              modified : List[Relationship] = List[Relationship](),
                              renamed : List[Relationship] = List[Relationship](),
@@ -165,52 +167,48 @@ class Diff_Manager(repo : Repository) {
       }
 
 
+
+
     def get_modif_files(new_file_lines :List[String], former_file_lines :List[String]): List[Change] = {
       //This function compare the 2 given files and gives the changes between these 2
       // It should return the smallest amount of Modification Object possible between these 2 files
 
-      if(new_file_lines.size == 1 && new_file_lines.head == ""){
-        return List[Change]()
-      }
-def loop(new_file_lines :List[String], former_file_lines :List[String], list_changes: List[Change] = List[Change](), line : Int = 0 ): List[Change] = {
+      def loop(new_file_lines :List[String], former_file_lines :List[String], list_changes: List[Change] = List[Change](), line : Int = 0 ): List[Change] = {
+        if(new_file_lines.isEmpty && former_file_lines.isEmpty){
+          //We are at the end and we would like to take only the smallest liste of changes
+          list_changes
+        }else {
+          if (new_file_lines.isEmpty) {
+            val change2 = new Change("-", line, former_file_lines.head)
+            return loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
+          }
+          if (former_file_lines.isEmpty) {
+            val change1 = new Change("+", line, new_file_lines.head)
+            return loop(new_file_lines.tail, former_file_lines, list_changes.appended(change1), line + 1)
+          }
 
-  if(new_file_lines.isEmpty && former_file_lines.isEmpty){
-        //We are at the end and we would like to take only the smallest liste of changes
-        list_changes
-      }
-  else if (former_file_lines.isEmpty) {
-        val change1 = new Change("+", line, new_file_lines.head)
-        return loop(new_file_lines.tail, former_file_lines, list_changes.appended(change1), line + 1)
-  }else {
-        if(former_file_lines.head == "" && former_file_lines.size == 1){
-          loop(new_file_lines, former_file_lines.tail, list_changes, line)
-        }
-        else if (new_file_lines.isEmpty) {
-          val change2 = new Change("-", line, former_file_lines.head)
-          return loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
-        }
-        else if (new_file_lines.head == former_file_lines.head) {
-          val no_change = new Change("", line, new_file_lines.head)
-          loop(new_file_lines.tail, former_file_lines.tail, list_changes.appended(no_change), line + 1)
-        }
-        else {
-          //We observe both scenarios :
-          //The line were removed from the former file
-          val change1 = Change("+", line, new_file_lines.head)
-          val add = loop(new_file_lines.tail, former_file_lines, list_changes.appended(change1), line + 1)
-          //The line were created into the new file
-          val change2 = Change("-", line, former_file_lines.head)
-          val supp = loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
-          if (add.size > supp.size) {
-            supp
-          } else {
-            add
+          if (new_file_lines.head == former_file_lines.head) {
+            val no_change = new Change("", line, new_file_lines.head)
+            loop(new_file_lines.tail, former_file_lines.tail, list_changes.appended(no_change), line + 1)
+          }
+          else {
+            //We observe both scenarios :
+            //The line were removed from the former file
+            val change1 = Change("+", line, new_file_lines.head)
+            val add = loop(new_file_lines.tail, former_file_lines, list_changes.appended(change1), line + 1)
+            //The line were created into the new file
+            val change2 = Change("-", line, former_file_lines.head)
+            val supp = loop(new_file_lines, former_file_lines.tail, list_changes.appended(change2), line)
+            if (add.size > supp.size) {
+              supp
+            } else {
+              add
+            }
           }
         }
       }
+      loop(new_file_lines,former_file_lines)
     }
-    loop(new_file_lines,former_file_lines)
-  }
 
 
 
@@ -255,7 +253,6 @@ def loop(new_file_lines :List[String], former_file_lines :List[String], list_cha
       }
       val new_set = Set_Relationship(set_Relationship.unmodified,set_Relationship.modified,set_Relationship.renamed.tail,set_Relationship.created,set_Relationship.deleted)
       diff_toString(new_set, str +  name_former_blob  + " has been renamed into => "  + name_new_blob +  "\n")
-
     }else {
       //We return the string
        str

@@ -14,12 +14,13 @@ object Command_Parser {
 
     case class Config(
                        command: String = "status",
-                       files: List[String] = List("test"),
+                       files: List[String] = List("rez"),
                        branch_tag: String = "",
                        commitMessage: List[String] = List("frev"),
                        pLog: Boolean = false,
-                       av: Boolean = false)
-//cdscsdcd
+                       av: Boolean = false
+                     )
+
     val builder = OParser.builder[Config]
     val parser1 = {
       import builder._

@@ -28,7 +28,7 @@ object Status_Manager {
         val blob_list = blob_Manager.blobs_create(working_tree_files)
         val blob_list_lines = blob_Manager.get_blob_list_index_line(blob_list)
         val set_Relationship_stage_untracked : Set_Relationship = diff_class.get_set_relationship_static(blob_list_lines,index)
-        val stage_untracked_string : String = status_toString(set_Relationship_stage_untracked)
+        val stage_untracked_string : String = status_toString(set_Relationship_stage_untracked, untracked =true)
         Output.print_sgit("Here is the changes to be comitted \n"+ commit_stage_string + "\nHere are the untracked changes \n" + stage_untracked_string)
       }
       case _ => None
@@ -54,7 +54,8 @@ object Status_Manager {
 
   def status_toString(set_Relationship: Set_Relationship, str : String ="",
                     get_blob_working_tree_file_path_function : (File,(File) => List[String]) => String = Blob_Manager.get_blob_working_tree_file_path,
-                    read_in_file_function : (File) => List[String] = File_Tools.read_in_file): String={
+                    read_in_file_function : (File) => List[String] = File_Tools.read_in_file,
+                      untracked : Boolean = false): String={
     //if modified. pas empty :
     // et apreès on passe au suivant created...
     if(set_Relationship.modified.nonEmpty) {
@@ -63,19 +64,33 @@ object Status_Manager {
         case Some(file) => get_blob_working_tree_file_path_function(file,read_in_file_function)
         case None => ""
       }
-      val modified_introduction = s"${name} has been modified \n"
-      val new_set = Set_Relationship(set_Relationship.unmodified,set_Relationship.modified.tail,set_Relationship.renamed,set_Relationship.created,set_Relationship.deleted)
-      status_toString(new_set, str + modified_introduction + "\n")
+      if(untracked) {
+        val modified_introduction = s"${Console.RED} ${name}  ${Console.RESET} has been modified"
+        val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified.tail, set_Relationship.renamed, set_Relationship.created, set_Relationship.deleted)
+        status_toString(new_set, str + modified_introduction + "\n")
+      }
+      else{
+        val modified_introduction = s"${Console.GREEN} ${name}  ${Console.RESET}  has been modified"
+        val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified.tail, set_Relationship.renamed, set_Relationship.created, set_Relationship.deleted)
+        status_toString(new_set, str + modified_introduction + "\n")
+      }
     }else
     if(set_Relationship.created.nonEmpty) {
       val relationship = set_Relationship.created.head
       val name = relationship.new_blob_file match {
         case Some(file) => get_blob_working_tree_file_path_function(file,read_in_file_function)
         case None => ""
+      }//fdsqfq
+      if(untracked) {
+        val modified_introduction = s"${Console.RED} ${name}  ${Console.RESET} has been created"
+        val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified, set_Relationship.renamed, set_Relationship.created.tail, set_Relationship.deleted)
+        status_toString(new_set, str + modified_introduction + "\n")
       }
-      val modified_introduction = s"${name} has been created \n"
-      val new_set = Set_Relationship(set_Relationship.unmodified,set_Relationship.modified,set_Relationship.renamed,set_Relationship.created.tail,set_Relationship.deleted)
-      status_toString(new_set, str + modified_introduction +  "\n")
+      else{
+        val modified_introduction = s"${Console.GREEN} ${name}  ${Console.RESET}  has been created"
+        val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified, set_Relationship.renamed, set_Relationship.created.tail, set_Relationship.deleted)
+        status_toString(new_set, str + modified_introduction + "\n")
+      }
     }else
     if(set_Relationship.deleted.nonEmpty) {
       val relationship = set_Relationship.deleted.head
@@ -83,9 +98,16 @@ object Status_Manager {
         case Some(file) => get_blob_working_tree_file_path_function(file,read_in_file_function)
         case None => ""
       }
-      val modified_introduction = s"${name} has been deleted \n"
-      val new_set = Set_Relationship(set_Relationship.unmodified,set_Relationship.modified,set_Relationship.renamed,set_Relationship.created,set_Relationship.deleted.tail)
-      status_toString(new_set, str + modified_introduction +  "\n")
+      if(untracked) {
+        val modified_introduction = s"${Console.RED} ${name}  ${Console.RESET} has been deleted"
+        val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified, set_Relationship.renamed, set_Relationship.created, set_Relationship.deleted.tail)
+        status_toString(new_set, str + modified_introduction + "\n")
+      }
+      else{
+        val modified_introduction = s"${Console.GREEN} ${name}  ${Console.RESET}  has been deleted"
+        val new_set = Set_Relationship(set_Relationship.unmodified, set_Relationship.modified, set_Relationship.renamed, set_Relationship.created, set_Relationship.deleted.tail)
+        status_toString(new_set, str + modified_introduction + "\n")
+      }
     }else
     if(set_Relationship.renamed.nonEmpty) {
       val relationship = set_Relationship.renamed.head
