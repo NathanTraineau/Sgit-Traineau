@@ -13,8 +13,8 @@ object Command_Parser {
   def main(args: Array[String]): Unit = {
 
     case class Config(
-                       command: String = "diff",
-                       files: List[String] = List("rez"),
+                       command: String = "",
+                       files: List[String] = List(),
                        branch_tag: String = "",
                        commitMessage: List[String] = List(),
                        pLog: Boolean = false,
