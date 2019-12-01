@@ -20,7 +20,7 @@ You will need to perform this set of commands to install sgit.
 > Then to write the path of the JAR file into sgit.sh you will need to set the location:
 * `` echo "java -jar `pwd`/target/scala-2.13/SGit-assembly-0.1.jar $"*"" > sgit.sh ``
 
-Now, you can run it from anywhere like so: custom_name sgit *ENTER* {args}
+Now, you can run it from anywhere like so: sgit {command} {args}
 
 If for some reason you have an error like “Could Not Create the Java Virtual Machine” I recommend you to try the 2 methods, to fix this problem, described at : https://appuals.com/fix-could-not-create-the-java-virtual-machine/
 
