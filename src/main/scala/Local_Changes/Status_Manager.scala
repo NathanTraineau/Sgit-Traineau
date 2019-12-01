@@ -18,7 +18,7 @@ object Status_Manager {
         val diff_class = new Diff_Manager(repo)
         //We get the index from the last commit file
         val log_manager = new Log_Manager(repo)
-        val commit_index_lines = get_index_lines(repo)
+        val commit_index_lines = get_index_lines(repo,true)
         val index_Manager = new Index_Manager(repo)
         val index = index_Manager.get_index_lines()
         val set_Relationship_commit_stage : Set_Relationship = diff_class.get_set_relationship_static(index,commit_index_lines)
@@ -36,12 +36,14 @@ object Status_Manager {
   }
 
 
-  def get_index_lines(repo: Repository) : List[String] = {
+  def get_index_lines(repo: Repository, status: Boolean = false) : List[String] = {
     val branch = repo.get_branch_manager()
     val last_commit_sha1 = branch.get_current_commit_sha1()
     val commit_index = ""
-    if(last_commit_sha1 == "0"*40){
-      Output.print_sgit("On branch "+ branch.get_current_branch_name() + "\nYou have no commits yet \n")
+    if(last_commit_sha1 == "0"*40 ){
+      if(status){
+        Output.print_sgit("On branch "+ branch.get_current_branch_name() + "\nYou have no commits yet \n")
+      }
       val commit_index =  "" :: Nil
       List[String]()
     }else {
