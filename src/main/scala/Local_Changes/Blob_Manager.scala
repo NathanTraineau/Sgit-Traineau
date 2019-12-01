@@ -72,9 +72,14 @@ class Blob_Manager(repo : Repository){
 
   def get_blob_file_from_index_line(index_line : String,
                                     get_object_file_from_sha1_function : (String,String) => File = repo.get_object_file_from_sha1): File = {
-    val parse_1 = Repository.parse_index_line(index_line)
-    val sha1_1 = parse_1(0)
-    get_object_file_from_sha1_function(sha1_1,"blob")
+
+    try {
+      val parse_1 = Repository.parse_index_line(index_line)
+      val sha1_1 = parse_1(0)
+      get_object_file_from_sha1_function(sha1_1,"blob")
+    }catch{
+      case _: Throwable => new File("")
+    }
   }
 }
 
@@ -96,7 +101,7 @@ def get_blob_working_tree_file_path(file : File,
       val l = lines.slice(1,lines.length)
       l
     }catch{
-      case _: Throwable => return List[String]()
+      case _: Throwable => List[String]()
     }
   }
 

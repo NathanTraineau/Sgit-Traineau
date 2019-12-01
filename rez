@@ -1,3 +1,88 @@
+package IO
+
+import scopt.OParser
+
+import Branches.Branch_Manager
+import Commit_History.Log_Manager
+import Create.Repository
+import Local_Changes.{Add_Manager, Commit_Manager, Diff_Manager, Status_Manager}
+
+object Command_Parser {
+fds
+cccccccccc
+sdq
+f
+sqdf
+zzzzzzzzzzz
+yyyyyyyyyyy
+aaaaaaaaaa
+bbbbbbbbbbb
+fdq
+fdsq
+ffdsqfsdq
+df
+d
+qf
+fd
+sqf
+q
+f
+dsf
+ds
+f
+dsqf
+dsq
+f
+sdf
+ds
+fq
+f
+sdq
+fs
+dqg
+hq
+qfhd
+dfhs
+h
+dsh
+d
+h
+es
+bfs
+f
+qsd
+f
+h'
+
+thz
+h
+re
+
+zg
+a
+e
+ag
+r
+ahet
+ah
+hr
+
+hrer
+r
+r
+r
+r
+r
+
+r
+h
+h
+ht
+rehtetrhtrehtrehr
+tr
+h
+trh
+trh
 package Local_Changes
 
 import java.io.File
@@ -68,7 +153,6 @@ class Diff_Manager(repo : Repository) {
         val blob_file = get_blob_file_from_index_line_function(blobs_lines.head,repo.get_object_file_from_sha1)
         val rel : Relationship = Relationship(Some(blob_file),None,"created",blobs_lines.head)
         //The Created files
-        print("file"+Blob_Manager.get_blob_file_content(blob_file)+ "\n")
         check_files_status(blobs_lines.tail,index_lines,unmodified,modified,renamed,created.appended(rel),deleted)
       }
     }else {
@@ -306,3 +390,10 @@ class Diff_Manager(repo : Repository) {
     }
   }
 }
+
+htr
+h
+trh
+trh
+tr
+
